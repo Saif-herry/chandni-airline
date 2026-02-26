@@ -79,10 +79,15 @@ This avoids:
 
 components/
 ├── flights/ (Domain components)
+
 ├── ui/ (Reusable base components)
+
 context/
+
 hooks/
+
 lib/ (Business logic & data transformation)
+
 types/ (TypeScript models)
 
 
