@@ -1,10 +1,5 @@
-import { FlightProvider } from "@/context/flight-context"
-import { FlightsPageContent } from "@/components/flights/flights-page-content"
+import { redirect } from "next/navigation";
 
-export default function FlightsPage() {
-  return (
-    <FlightProvider>
-      <FlightsPageContent />
-    </FlightProvider>
-  )
+export default function Home() {
+  redirect("/flights");
 }
