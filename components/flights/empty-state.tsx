@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { useFlights } from "@/context/flight-context"
-import Button from "@mui/material/Button"
-import { SearchX, RotateCcw } from "lucide-react"
+import { useFlights } from "@/context/flight-context";
+import Button from "@mui/material/Button";
+import { SearchX, RotateCcw } from "lucide-react";
 
 export function EmptyState() {
-  const { resetFilters } = useFlights()
+  const { resetFilters } = useFlights();
 
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
@@ -28,11 +28,14 @@ export function EmptyState() {
           borderColor: "var(--border)",
           color: "var(--foreground)",
           borderRadius: "0.5rem",
-          "&:hover": { backgroundColor: "var(--secondary)", borderColor: "var(--border)" },
+          "&:hover": {
+            backgroundColor: "var(--secondary)",
+            borderColor: "var(--border)",
+          },
         }}
       >
         Reset Filters
       </Button>
     </div>
-  )
+  );
 }

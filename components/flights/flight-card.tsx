@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+
 import type { NormalizedFlight, Fare } from "@/types/flight";
 import { useFlights } from "@/context/flight-context";
 import {

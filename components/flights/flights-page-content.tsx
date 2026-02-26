@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { SearchHeader } from "./search-header"
-import { FilterSidebar } from "./filter-sidebar"
-import { FlightResults } from "./flight-results"
+import { SearchHeader } from "./search-header";
+import { FilterSidebar } from "./filter-sidebar";
+import { FlightResults } from "./flight-results";
 
 export function FlightsPageContent() {
   return (
@@ -25,5 +25,5 @@ export function FlightsPageContent() {
         </div>
       </main>
     </div>
-  )
+  );
 }

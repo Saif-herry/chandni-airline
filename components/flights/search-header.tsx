@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { useFlights } from "@/context/flight-context"
-import { getAirportCity, formatDate } from "@/lib/flight-utils"
+import { useState } from "react";
+import { useFlights } from "@/context/flight-context";
+import { getAirportCity, formatDate } from "@/lib/flight-utils";
 import {
   Plane,
   ArrowLeftRight,
@@ -12,37 +12,42 @@ import {
   ChevronDown,
   Minus,
   Plus,
-} from "lucide-react"
-import Button from "@mui/material/Button"
-import IconButton from "@mui/material/IconButton"
-import Chip from "@mui/material/Chip"
-import Popover from "@mui/material/Popover"
-import TextField from "@mui/material/TextField"
-import type { MetaData, AirportDetail } from "@/types/flight"
+} from "lucide-react";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Chip from "@mui/material/Chip";
+import Popover from "@mui/material/Popover";
+import TextField from "@mui/material/TextField";
+import type { MetaData, AirportDetail } from "@/types/flight";
 
 function getAirportList(metaData: MetaData): AirportDetail[] {
-  return Object.values(metaData.airportDetail)
+  return Object.values(metaData.airportDetail);
 }
 
 interface AirportSelectorProps {
-  label: string
-  value: string
-  metaData: MetaData
-  onChange: (code: string) => void
+  label: string;
+  value: string;
+  metaData: MetaData;
+  onChange: (code: string) => void;
 }
 
-function AirportSelector({ label, value, metaData, onChange }: AirportSelectorProps) {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
-  const [query, setQuery] = useState("")
-  const airports = getAirportList(metaData)
+function AirportSelector({
+  label,
+  value,
+  metaData,
+  onChange,
+}: AirportSelectorProps) {
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [query, setQuery] = useState("");
+  const airports = getAirportList(metaData);
   const filtered = airports.filter(
     (a) =>
       a.city.toLowerCase().includes(query.toLowerCase()) ||
       a.code.toLowerCase().includes(query.toLowerCase()) ||
-      a.name.toLowerCase().includes(query.toLowerCase())
-  )
-  const selectedAirport = metaData.airportDetail[value]
-  const open = Boolean(anchorEl)
+      a.name.toLowerCase().includes(query.toLowerCase()),
+  );
+  const selectedAirport = metaData.airportDetail[value];
+  const open = Boolean(anchorEl);
 
   return (
     <>
@@ -63,7 +68,10 @@ function AirportSelector({ label, value, metaData, onChange }: AirportSelectorPr
       <Popover
         open={open}
         anchorEl={anchorEl}
-        onClose={() => { setAnchorEl(null); setQuery("") }}
+        onClose={() => {
+          setAnchorEl(null);
+          setQuery("");
+        }}
         anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
         transformOrigin={{ vertical: "top", horizontal: "left" }}
         slotProps={{ paper: { className: "rounded-xl mt-1 shadow-lg" } }}
@@ -81,15 +89,17 @@ function AirportSelector({ label, value, metaData, onChange }: AirportSelectorPr
           />
           <div className="max-h-48 overflow-y-auto flex flex-col gap-0.5">
             {filtered.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-3">No airports found</p>
+              <p className="text-sm text-muted-foreground text-center py-3">
+                No airports found
+              </p>
             )}
             {filtered.map((airport) => (
               <button
                 key={airport.code}
                 onClick={() => {
-                  onChange(airport.code)
-                  setAnchorEl(null)
-                  setQuery("")
+                  onChange(airport.code);
+                  setAnchorEl(null);
+                  setQuery("");
                 }}
                 className={`flex items-center gap-3 rounded-md px-3 py-2 text-left transition-colors ${
                   airport.code === value
@@ -101,11 +111,19 @@ function AirportSelector({ label, value, metaData, onChange }: AirportSelectorPr
                 <div>
                   <p className="text-sm font-medium">
                     {airport.city}{" "}
-                    <span className={airport.code === value ? "text-primary-foreground/70" : "text-muted-foreground"}>
+                    <span
+                      className={
+                        airport.code === value
+                          ? "text-primary-foreground/70"
+                          : "text-muted-foreground"
+                      }
+                    >
                       ({airport.code})
                     </span>
                   </p>
-                  <p className={`text-xs ${airport.code === value ? "text-primary-foreground/60" : "text-muted-foreground"}`}>
+                  <p
+                    className={`text-xs ${airport.code === value ? "text-primary-foreground/60" : "text-muted-foreground"}`}
+                  >
                     {airport.name}
                   </p>
                 </div>
@@ -115,29 +133,29 @@ function AirportSelector({ label, value, metaData, onChange }: AirportSelectorPr
         </div>
       </Popover>
     </>
-  )
+  );
 }
 
 interface PassengerPickerProps {
-  passengers: { ADT: number; CHD: number; INF: number }
-  onChange: (passengers: { ADT: number; CHD: number; INF: number }) => void
+  passengers: { ADT: number; CHD: number; INF: number };
+  onChange: (passengers: { ADT: number; CHD: number; INF: number }) => void;
 }
 
 function PassengerPicker({ passengers, onChange }: PassengerPickerProps) {
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null)
-  const total = passengers.ADT + passengers.CHD + passengers.INF
-  const open = Boolean(anchorEl)
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const total = passengers.ADT + passengers.CHD + passengers.INF;
+  const open = Boolean(anchorEl);
 
   const update = (type: "ADT" | "CHD" | "INF", delta: number) => {
-    const newVal = Math.max(type === "ADT" ? 1 : 0, passengers[type] + delta)
-    onChange({ ...passengers, [type]: Math.min(newVal, 9) })
-  }
+    const newVal = Math.max(type === "ADT" ? 1 : 0, passengers[type] + delta);
+    onChange({ ...passengers, [type]: Math.min(newVal, 9) });
+  };
 
   const rows: { key: "ADT" | "CHD" | "INF"; label: string; sub: string }[] = [
     { key: "ADT", label: "Adults", sub: "12+ years" },
     { key: "CHD", label: "Children", sub: "2-11 years" },
     { key: "INF", label: "Infants", sub: "Under 2 years" },
-  ]
+  ];
 
   return (
     <>
@@ -168,14 +186,20 @@ function PassengerPicker({ passengers, onChange }: PassengerPickerProps) {
           {rows.map((row) => (
             <div key={row.key} className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-foreground">{row.label}</p>
+                <p className="text-sm font-medium text-foreground">
+                  {row.label}
+                </p>
                 <p className="text-xs text-muted-foreground">{row.sub}</p>
               </div>
               <div className="flex items-center gap-2">
                 <IconButton
                   size="small"
                   onClick={() => update(row.key, -1)}
-                  disabled={row.key === "ADT" ? passengers[row.key] <= 1 : passengers[row.key] <= 0}
+                  disabled={
+                    row.key === "ADT"
+                      ? passengers[row.key] <= 1
+                      : passengers[row.key] <= 0
+                  }
                   className="border border-border"
                   sx={{ width: 28, height: 28 }}
                 >
@@ -199,27 +223,29 @@ function PassengerPicker({ passengers, onChange }: PassengerPickerProps) {
         </div>
       </Popover>
     </>
-  )
+  );
 }
 
 export function SearchHeader() {
-  const { state, setSearchParams } = useFlights()
-  const { searchQuery, metaData, filters } = state
+  const { state, setSearchParams } = useFlights();
+  const { searchQuery, metaData, filters } = state;
 
-  const [origin, setOrigin] = useState(searchQuery.origin)
-  const [destination, setDestination] = useState(searchQuery.destination)
-  const [departureDate, setDepartureDate] = useState(searchQuery.departureDate)
-  const [returnDate, setReturnDate] = useState(searchQuery.returnDate)
-  const [tripType, setTripType] = useState<"one-way" | "round-trip">(filters.tripType)
+  const [origin, setOrigin] = useState(searchQuery.origin);
+  const [destination, setDestination] = useState(searchQuery.destination);
+  const [departureDate, setDepartureDate] = useState(searchQuery.departureDate);
+  const [returnDate, setReturnDate] = useState(searchQuery.returnDate);
+  const [tripType, setTripType] = useState<"one-way" | "round-trip">(
+    filters.tripType,
+  );
   const [passengers, setPassengers] = useState({
     ADT: filters.passengers.ADT,
     CHD: filters.passengers.CHD,
     INF: filters.passengers.INF,
-  })
+  });
 
   const handleSearch = () => {
-    if (!origin || !destination || !departureDate) return
-    if (origin === destination) return
+    if (!origin || !destination || !departureDate) return;
+    if (origin === destination) return;
     setSearchParams({
       origin,
       destination,
@@ -227,13 +253,13 @@ export function SearchHeader() {
       returnDate: tripType === "round-trip" ? returnDate : "",
       tripType,
       passengers,
-    })
-  }
+    });
+  };
 
   const swapCities = () => {
-    setOrigin(destination)
-    setDestination(origin)
-  }
+    setOrigin(destination);
+    setDestination(origin);
+  };
 
   return (
     <header className="bg-primary text-primary-foreground">
@@ -306,7 +332,10 @@ export function SearchHeader() {
             {/* Dates */}
             <div className="flex items-center gap-2">
               <div className="flex flex-col gap-0.5 rounded-lg bg-primary-foreground/10 px-3 py-2">
-                <label htmlFor="departure-date" className="text-[10px] uppercase tracking-wider text-primary-foreground/60">
+                <label
+                  htmlFor="departure-date"
+                  className="text-[10px] uppercase tracking-wider text-primary-foreground/60"
+                >
                   Departure
                 </label>
                 <div className="flex items-center gap-2">
@@ -323,7 +352,10 @@ export function SearchHeader() {
 
               {tripType === "round-trip" && (
                 <div className="flex flex-col gap-0.5 rounded-lg bg-primary-foreground/10 px-3 py-2">
-                  <label htmlFor="return-date" className="text-[10px] uppercase tracking-wider text-primary-foreground/60">
+                  <label
+                    htmlFor="return-date"
+                    className="text-[10px] uppercase tracking-wider text-primary-foreground/60"
+                  >
                     Return
                   </label>
                   <div className="flex items-center gap-2">
@@ -348,7 +380,12 @@ export function SearchHeader() {
             <Button
               onClick={handleSearch}
               variant="contained"
-              disabled={!origin || !destination || !departureDate || origin === destination}
+              disabled={
+                !origin ||
+                !destination ||
+                !departureDate ||
+                origin === destination
+              }
               startIcon={<Search className="size-4" />}
               sx={{
                 backgroundColor: "var(--primary-foreground)",
@@ -358,8 +395,14 @@ export function SearchHeader() {
                 py: 1.5,
                 borderRadius: "0.5rem",
                 textTransform: "none",
-                "&:hover": { backgroundColor: "var(--primary-foreground)", opacity: 0.9 },
-                "&.Mui-disabled": { backgroundColor: "var(--primary-foreground)", opacity: 0.5 },
+                "&:hover": {
+                  backgroundColor: "var(--primary-foreground)",
+                  opacity: 0.9,
+                },
+                "&.Mui-disabled": {
+                  backgroundColor: "var(--primary-foreground)",
+                  opacity: 0.5,
+                },
               }}
             >
               Search Flights
@@ -380,31 +423,56 @@ export function SearchHeader() {
           <Chip
             label={`${getAirportCity(searchQuery.origin, metaData)} (${searchQuery.origin})`}
             size="small"
-            sx={{ backgroundColor: "rgba(255,255,255,0.15)", color: "var(--primary-foreground)", fontSize: "0.75rem", height: 24 }}
+            sx={{
+              backgroundColor: "rgba(255,255,255,0.15)",
+              color: "var(--primary-foreground)",
+              fontSize: "0.75rem",
+              height: 24,
+            }}
           />
           <ArrowLeftRight className="size-3" />
           <Chip
             label={`${getAirportCity(searchQuery.destination, metaData)} (${searchQuery.destination})`}
             size="small"
-            sx={{ backgroundColor: "rgba(255,255,255,0.15)", color: "var(--primary-foreground)", fontSize: "0.75rem", height: 24 }}
+            sx={{
+              backgroundColor: "rgba(255,255,255,0.15)",
+              color: "var(--primary-foreground)",
+              fontSize: "0.75rem",
+              height: 24,
+            }}
           />
           <Chip
             label={`${formatDate(searchQuery.departureDate + "T00:00:00")}${searchQuery.returnDate ? ` - ${formatDate(searchQuery.returnDate + "T00:00:00")}` : ""}`}
             size="small"
-            sx={{ backgroundColor: "rgba(255,255,255,0.15)", color: "var(--primary-foreground)", fontSize: "0.75rem", height: 24 }}
+            sx={{
+              backgroundColor: "rgba(255,255,255,0.15)",
+              color: "var(--primary-foreground)",
+              fontSize: "0.75rem",
+              height: 24,
+            }}
           />
           <Chip
             label={filters.tripType === "round-trip" ? "Round Trip" : "One Way"}
             size="small"
-            sx={{ backgroundColor: "rgba(255,255,255,0.15)", color: "var(--primary-foreground)", fontSize: "0.75rem", height: 24 }}
+            sx={{
+              backgroundColor: "rgba(255,255,255,0.15)",
+              color: "var(--primary-foreground)",
+              fontSize: "0.75rem",
+              height: 24,
+            }}
           />
           <Chip
-            label={`${filters.passengers.ADT + filters.passengers.CHD + filters.passengers.INF} Traveller${(filters.passengers.ADT + filters.passengers.CHD + filters.passengers.INF) > 1 ? "s" : ""}`}
+            label={`${filters.passengers.ADT + filters.passengers.CHD + filters.passengers.INF} Traveller${filters.passengers.ADT + filters.passengers.CHD + filters.passengers.INF > 1 ? "s" : ""}`}
             size="small"
-            sx={{ backgroundColor: "rgba(255,255,255,0.15)", color: "var(--primary-foreground)", fontSize: "0.75rem", height: 24 }}
+            sx={{
+              backgroundColor: "rgba(255,255,255,0.15)",
+              color: "var(--primary-foreground)",
+              fontSize: "0.75rem",
+              height: 24,
+            }}
           />
         </div>
       </div>
     </header>
-  )
+  );
 }

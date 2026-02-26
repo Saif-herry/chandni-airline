@@ -19,7 +19,7 @@ export function FlightResults() {
       {/* Sort Bar */}
       <SortBar />
 
-      {/* Loading State */}
+      {/* Loading State  */}
       {state.isLoading && <LoadingState />}
 
       {/* Error State */}

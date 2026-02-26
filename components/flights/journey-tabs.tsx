@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { useFlights } from "@/context/flight-context"
-import { getAirportCity, formatDate } from "@/lib/flight-utils"
-import { Plane, ArrowRight } from "lucide-react"
+import { useFlights } from "@/context/flight-context";
+import { getAirportCity, formatDate } from "@/lib/flight-utils";
+import { Plane, ArrowRight } from "lucide-react";
 
 export function JourneyTabs() {
-  const { state, setActiveJourney } = useFlights()
-  const { metaData, filters, allFlights } = state
+  const { state, setActiveJourney } = useFlights();
+  const { metaData, filters, allFlights } = state;
 
-  // Only show tabs if there are J2 flights (round trip)
-  const hasJ2 = (allFlights["J2"] ?? []).length > 0
-  if (!hasJ2) return null
+  // Only show tabs if there are J2 flights (round trip).
+  const hasJ2 = (allFlights["J2"] ?? []).length > 0;
+  if (!hasJ2) return null;
 
   const tabs = [
     {
@@ -33,12 +33,12 @@ export function JourneyTabs() {
         ? formatDate(filters.returnDate + "T00:00:00")
         : "",
     },
-  ]
+  ];
 
   return (
     <div className="flex gap-3">
       {tabs.map((tab) => {
-        const isActive = filters.activeJourney === tab.key
+        const isActive = filters.activeJourney === tab.key;
 
         return (
           <button
@@ -52,10 +52,14 @@ export function JourneyTabs() {
           >
             <div
               className={`flex items-center justify-center rounded-lg p-2 ${
-                isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                isActive
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground"
               }`}
             >
-              <Plane className={`size-4 ${tab.key === "J2" ? "rotate-180" : ""}`} />
+              <Plane
+                className={`size-4 ${tab.key === "J2" ? "rotate-180" : ""}`}
+              />
             </div>
             <div>
               <div className="flex items-center gap-1.5 text-sm font-semibold">
@@ -70,8 +74,8 @@ export function JourneyTabs() {
               <p className="text-xs text-muted-foreground">{tab.date}</p>
             </div>
           </button>
-        )
+        );
       })}
     </div>
-  )
+  );
 }
