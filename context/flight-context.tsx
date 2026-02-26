@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   createContext,
@@ -8,7 +8,8 @@ import {
   useCallback,
   useEffect,
   type ReactNode,
-} from "react"
+} from "react";
+
 import type {
   FilterState,
   NormalizedFlight,
@@ -18,26 +19,29 @@ import type {
   DepartureTimeRange,
   MetaData,
   SearchQuery,
-} from "@/types/flight"
+} from "@/types/flight";
+
 import {
   normalizeFlights,
   getPriceRange,
   getHourFromISO,
-} from "@/lib/flight-utils"
-import { generateFlightsForRoute } from "@/lib/generate-flights"
-import flightData from "@/data/flights.json"
+} from "@/lib/flight-utils";
+
+import { generateFlightsForRoute } from "@/lib/generate-flights";
+
+import flightData from "@/data/flights.json";
 
 // ===== State =====
 interface FlightState {
-  rawData: FlightSearchResponse
-  allFlights: Record<string, NormalizedFlight[]>
-  filters: FilterState
-  searchQuery: SearchQuery
-  metaData: MetaData
-  isLoading: boolean
-  error: string | null
-  currentPage: number
-  pageSize: number
+  rawData: FlightSearchResponse;
+  allFlights: Record<string, NormalizedFlight[]>;
+  filters: FilterState;
+  searchQuery: SearchQuery;
+  metaData: MetaData;
+  isLoading: boolean;
+  error: string | null;
+  currentPage: number;
+  pageSize: number;
 }
 
 // ===== Actions =====
@@ -52,62 +56,61 @@ type FlightAction =
   | { type: "SET_PAGE"; payload: number }
   | { type: "RESET_FILTERS" }
   | {
-      type: "SET_SEARCH_RESULTS"
+      type: "SET_SEARCH_RESULTS";
       payload: {
-        origin: string
-        destination: string
-        departureDate: string
-        returnDate: string
-        tripType: "one-way" | "round-trip"
-        passengers: { ADT: number; CHD: number; INF: number }
-        outboundFlights: NormalizedFlight[]
-        returnFlights: NormalizedFlight[]
-      }
-    }
+        origin: string;
+        destination: string;
+        departureDate: string;
+        returnDate: string;
+        tripType: "one-way" | "round-trip";
+        passengers: { ADT: number; CHD: number; INF: number };
+        outboundFlights: NormalizedFlight[];
+        returnFlights: NormalizedFlight[];
+      };
+    };
 
 // ===== Reducer =====
 function flightReducer(state: FlightState, action: FlightAction): FlightState {
   switch (action.type) {
     case "SET_LOADING":
-      return { ...state, isLoading: action.payload }
+      return { ...state, isLoading: action.payload };
     case "SET_ERROR":
-      return { ...state, error: action.payload }
+      return { ...state, error: action.payload };
     case "SET_ACTIVE_JOURNEY":
       return {
         ...state,
         filters: { ...state.filters, activeJourney: action.payload },
         currentPage: 1,
-      }
+      };
     case "SET_SORT":
       return {
         ...state,
         filters: { ...state.filters, sortBy: action.payload },
         currentPage: 1,
-      }
+      };
     case "SET_STOPS":
       return {
         ...state,
         filters: { ...state.filters, stops: action.payload },
         currentPage: 1,
-      }
+      };
     case "SET_PRICE_RANGE":
       return {
         ...state,
         filters: { ...state.filters, priceRange: action.payload },
         currentPage: 1,
-      }
+      };
     case "SET_DEPARTURE_TIME":
       return {
         ...state,
         filters: { ...state.filters, departureTimeRange: action.payload },
         currentPage: 1,
-      }
+      };
     case "SET_PAGE":
-      return { ...state, currentPage: action.payload }
+      return { ...state, currentPage: action.payload };
     case "RESET_FILTERS": {
-      const activeFlights =
-        state.allFlights[state.filters.activeJourney] ?? []
-      const [min, max] = getPriceRange(activeFlights)
+      const activeFlights = state.allFlights[state.filters.activeJourney] ?? [];
+      const [min, max] = getPriceRange(activeFlights);
       return {
         ...state,
         filters: {
@@ -118,7 +121,7 @@ function flightReducer(state: FlightState, action: FlightAction): FlightState {
           sortBy: "price",
         },
         currentPage: 1,
-      }
+      };
     }
     case "SET_SEARCH_RESULTS": {
       const {
@@ -130,16 +133,16 @@ function flightReducer(state: FlightState, action: FlightAction): FlightState {
         passengers,
         outboundFlights,
         returnFlights,
-      } = action.payload
+      } = action.payload;
 
       const newAllFlights: Record<string, NormalizedFlight[]> = {
         J1: outboundFlights,
-      }
+      };
       if (tripType === "round-trip" && returnFlights.length > 0) {
-        newAllFlights["J2"] = returnFlights
+        newAllFlights["J2"] = returnFlights;
       }
 
-      const [min, max] = getPriceRange(outboundFlights)
+      const [min, max] = getPriceRange(outboundFlights);
 
       return {
         ...state,
@@ -170,50 +173,50 @@ function flightReducer(state: FlightState, action: FlightAction): FlightState {
           INF: String(passengers.INF),
         },
         currentPage: 1,
-      }
+      };
     }
     default:
-      return state
+      return state;
   }
 }
 
 // ===== Context =====
 interface FlightContextValue {
-  state: FlightState
-  filteredFlights: NormalizedFlight[]
-  paginatedFlights: NormalizedFlight[]
-  totalPages: number
-  activeFlights: NormalizedFlight[]
-  priceRange: [number, number]
-  dispatch: React.Dispatch<FlightAction>
-  setActiveJourney: (j: "J1" | "J2") => void
-  setSort: (s: SortBy) => void
-  setStops: (s: StopsFilter) => void
-  setPriceRange: (r: [number, number]) => void
-  setDepartureTime: (d: DepartureTimeRange) => void
-  setPage: (p: number) => void
-  resetFilters: () => void
+  state: FlightState;
+  filteredFlights: NormalizedFlight[];
+  paginatedFlights: NormalizedFlight[];
+  totalPages: number;
+  activeFlights: NormalizedFlight[];
+  priceRange: [number, number];
+  dispatch: React.Dispatch<FlightAction>;
+  setActiveJourney: (j: "J1" | "J2") => void;
+  setSort: (s: SortBy) => void;
+  setStops: (s: StopsFilter) => void;
+  setPriceRange: (r: [number, number]) => void;
+  setDepartureTime: (d: DepartureTimeRange) => void;
+  setPage: (p: number) => void;
+  resetFilters: () => void;
   setSearchParams: (params: {
-    origin: string
-    destination: string
-    departureDate: string
-    returnDate: string
-    tripType: "one-way" | "round-trip"
-    passengers: { ADT: number; CHD: number; INF: number }
-  }) => void
+    origin: string;
+    destination: string;
+    departureDate: string;
+    returnDate: string;
+    tripType: "one-way" | "round-trip";
+    passengers: { ADT: number; CHD: number; INF: number };
+  }) => void;
 }
 
-const FlightContext = createContext<FlightContextValue | null>(null)
+const FlightContext = createContext<FlightContextValue | null>(null);
 
 // ===== Provider =====
 export function FlightProvider({ children }: { children: ReactNode }) {
-  const rawData = flightData as unknown as FlightSearchResponse
-  const allFlights = useMemo(() => normalizeFlights(rawData), [rawData])
-  const searchQuery = rawData.data.result.searchQuery
-  const metaData = rawData.data.result.metaData
+  const rawData = flightData as unknown as FlightSearchResponse;
+  const allFlights = useMemo(() => normalizeFlights(rawData), [rawData]);
+  const searchQuery = rawData.data.result.searchQuery;
+  const metaData = rawData.data.result.metaData;
 
-  const j1Flights = allFlights["J1"] ?? []
-  const [minP, maxP] = getPriceRange(j1Flights)
+  const j1Flights = allFlights["J1"] ?? [];
+  const [minP, maxP] = getPriceRange(j1Flights);
 
   const initialState: FlightState = {
     rawData,
@@ -241,152 +244,154 @@ export function FlightProvider({ children }: { children: ReactNode }) {
     error: null,
     currentPage: 1,
     pageSize: 5,
-  }
+  };
 
-  const [state, dispatch] = useReducer(flightReducer, initialState)
+  const [state, dispatch] = useReducer(flightReducer, initialState);
 
   // Simulate loading on mount
   useEffect(() => {
-    dispatch({ type: "SET_LOADING", payload: true })
+    dispatch({ type: "SET_LOADING", payload: true });
     const timer = setTimeout(() => {
-      dispatch({ type: "SET_LOADING", payload: false })
-    }, 800)
-    return () => clearTimeout(timer)
-  }, [])
+      dispatch({ type: "SET_LOADING", payload: false });
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Get active journey flights
   const activeFlights = useMemo(
     () => state.allFlights[state.filters.activeJourney] ?? [],
-    [state.allFlights, state.filters.activeJourney]
-  )
+    [state.allFlights, state.filters.activeJourney],
+  );
 
   const priceRange = useMemo(
     () => getPriceRange(activeFlights),
-    [activeFlights]
-  )
+    [activeFlights],
+  );
 
   // Apply filters & sorting (no origin/destination filter needed since
   // generated data is already for the correct route)
   const filteredFlights = useMemo(() => {
-    let flights = [...activeFlights]
+    let flights = [...activeFlights];
 
     // Filter by stops
     if (state.filters.stops !== "any") {
       flights = flights.filter((f) => {
         switch (state.filters.stops) {
           case "non-stop":
-            return f.totalStops === 0
+            return f.totalStops === 0;
           case "1-stop":
-            return f.totalStops === 1
+            return f.totalStops === 1;
           case "2+-stops":
-            return f.totalStops >= 2
+            return f.totalStops >= 2;
           default:
-            return true
+            return true;
         }
-      })
+      });
     }
 
     // Filter by price range
     flights = flights.filter(
       (f) =>
         f.pricePerAdult >= state.filters.priceRange[0] &&
-        f.pricePerAdult <= state.filters.priceRange[1]
-    )
+        f.pricePerAdult <= state.filters.priceRange[1],
+    );
 
     // Filter by departure time
     if (state.filters.departureTimeRange !== "any") {
       flights = flights.filter((f) => {
-        const hour = getHourFromISO(f.departureTime)
+        const hour = getHourFromISO(f.departureTime);
         switch (state.filters.departureTimeRange) {
           case "morning":
-            return hour >= 5 && hour < 12
+            return hour >= 5 && hour < 12;
           case "afternoon":
-            return hour >= 12 && hour < 17
+            return hour >= 12 && hour < 17;
           case "evening":
-            return hour >= 17 && hour < 21
+            return hour >= 17 && hour < 21;
           case "night":
-            return hour >= 21 || hour < 5
+            return hour >= 21 || hour < 5;
           default:
-            return true
+            return true;
         }
-      })
+      });
     }
 
     // Sort
     switch (state.filters.sortBy) {
       case "price":
-        flights.sort((a, b) => a.pricePerAdult - b.pricePerAdult)
-        break
+        flights.sort((a, b) => a.pricePerAdult - b.pricePerAdult);
+        break;
       case "duration":
-        flights.sort((a, b) => a.totalDurationMin - b.totalDurationMin)
-        break
+        flights.sort((a, b) => a.totalDurationMin - b.totalDurationMin);
+        break;
       case "departure":
-        flights.sort(
-          (a, b) => {
-            // Parse directly from string to avoid timezone hydration issues
-            const aMatch = a.departureTime.match(/T(\d{2}):(\d{2})/)
-            const bMatch = b.departureTime.match(/T(\d{2}):(\d{2})/)
-            const aMin = aMatch ? parseInt(aMatch[1]) * 60 + parseInt(aMatch[2]) : 0
-            const bMin = bMatch ? parseInt(bMatch[1]) * 60 + parseInt(bMatch[2]) : 0
-            return aMin - bMin
-          }
-        )
-        break
+        flights.sort((a, b) => {
+          // Parse directly from string to avoid timezone hydration issues
+          const aMatch = a.departureTime.match(/T(\d{2}):(\d{2})/);
+          const bMatch = b.departureTime.match(/T(\d{2}):(\d{2})/);
+          const aMin = aMatch
+            ? parseInt(aMatch[1]) * 60 + parseInt(aMatch[2])
+            : 0;
+          const bMin = bMatch
+            ? parseInt(bMatch[1]) * 60 + parseInt(bMatch[2])
+            : 0;
+          return aMin - bMin;
+        });
+        break;
     }
 
-    return flights
-  }, [activeFlights, state.filters])
+    return flights;
+  }, [activeFlights, state.filters]);
 
   // Pagination
   const totalPages = Math.max(
     1,
-    Math.ceil(filteredFlights.length / state.pageSize)
-  )
+    Math.ceil(filteredFlights.length / state.pageSize),
+  );
   const paginatedFlights = useMemo(() => {
-    const start = (state.currentPage - 1) * state.pageSize
-    return filteredFlights.slice(start, start + state.pageSize)
-  }, [filteredFlights, state.currentPage, state.pageSize])
+    const start = (state.currentPage - 1) * state.pageSize;
+    return filteredFlights.slice(start, start + state.pageSize);
+  }, [filteredFlights, state.currentPage, state.pageSize]);
 
   // Action creators
   const setActiveJourney = useCallback(
     (j: "J1" | "J2") => dispatch({ type: "SET_ACTIVE_JOURNEY", payload: j }),
-    []
-  )
+    [],
+  );
   const setSort = useCallback(
     (s: SortBy) => dispatch({ type: "SET_SORT", payload: s }),
-    []
-  )
+    [],
+  );
   const setStops = useCallback(
     (s: StopsFilter) => dispatch({ type: "SET_STOPS", payload: s }),
-    []
-  )
+    [],
+  );
   const setPriceRange = useCallback(
     (r: [number, number]) => dispatch({ type: "SET_PRICE_RANGE", payload: r }),
-    []
-  )
+    [],
+  );
   const setDepartureTime = useCallback(
     (d: DepartureTimeRange) =>
       dispatch({ type: "SET_DEPARTURE_TIME", payload: d }),
-    []
-  )
+    [],
+  );
   const setPage = useCallback(
     (p: number) => dispatch({ type: "SET_PAGE", payload: p }),
-    []
-  )
+    [],
+  );
   const resetFilters = useCallback(
     () => dispatch({ type: "RESET_FILTERS" }),
-    []
-  )
+    [],
+  );
   const setSearchParams = useCallback(
     (params: {
-      origin: string
-      destination: string
-      departureDate: string
-      returnDate: string
-      tripType: "one-way" | "round-trip"
-      passengers: { ADT: number; CHD: number; INF: number }
+      origin: string;
+      destination: string;
+      departureDate: string;
+      returnDate: string;
+      tripType: "one-way" | "round-trip";
+      passengers: { ADT: number; CHD: number; INF: number };
     }) => {
-      dispatch({ type: "SET_LOADING", payload: true })
+      dispatch({ type: "SET_LOADING", payload: true });
 
       // Generate flights dynamically based on the search
       setTimeout(() => {
@@ -395,23 +400,23 @@ export function FlightProvider({ children }: { children: ReactNode }) {
           params.destination,
           params.departureDate,
           state.metaData,
-          state.metaData.airlineDetail
-        )
+          state.metaData.airlineDetail,
+        );
 
-        let returnFlights: NormalizedFlight[] = []
+        let returnFlights: NormalizedFlight[] = [];
         if (params.tripType === "round-trip" && params.returnDate) {
           returnFlights = generateFlightsForRoute(
             params.destination,
             params.origin,
             params.returnDate,
             state.metaData,
-            state.metaData.airlineDetail
-          )
+            state.metaData.airlineDetail,
+          );
           // Fix journey keys for return flights
           returnFlights = returnFlights.map((f) => ({
             ...f,
             journeyKey: "J2",
-          }))
+          }));
         }
 
         dispatch({
@@ -421,12 +426,12 @@ export function FlightProvider({ children }: { children: ReactNode }) {
             outboundFlights,
             returnFlights,
           },
-        })
-        dispatch({ type: "SET_LOADING", payload: false })
-      }, 800)
+        });
+        dispatch({ type: "SET_LOADING", payload: false });
+      }, 800);
     },
-    [state.metaData]
-  )
+    [state.metaData],
+  );
 
   const value = useMemo(
     () => ({
@@ -461,17 +466,16 @@ export function FlightProvider({ children }: { children: ReactNode }) {
       setPage,
       resetFilters,
       setSearchParams,
-    ]
-  )
+    ],
+  );
 
   return (
     <FlightContext.Provider value={value}>{children}</FlightContext.Provider>
-  )
+  );
 }
 
 export function useFlights() {
-  const ctx = useContext(FlightContext)
-  if (!ctx)
-    throw new Error("useFlights must be used within a FlightProvider")
-  return ctx
+  const ctx = useContext(FlightContext);
+  if (!ctx) throw new Error("useFlights must be used within a FlightProvider");
+  return ctx;
 }

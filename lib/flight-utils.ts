@@ -4,54 +4,77 @@ import type {
   FlightOption,
   Sector,
   MetaData,
-} from "@/types/flight"
+} from "@/types/flight";
 
 /**
  * Format duration from minutes to "Xh Ym" string
  */
 export function formatDuration(minutes: number): string {
-  const h = Math.floor(minutes / 60)
-  const m = minutes % 60
-  return m > 0 ? `${h}h ${m}m` : `${h}h`
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
 /**
  * Format time from ISO string to HH:MM
- * Parses the string directly to avoid timezone conversion differences
- * between server and client (hydration mismatch).
  */
 export function formatTime(isoString: string): string {
   // e.g. "2025-06-20T15:45:00" -> extract "15:45"
-  const match = isoString.match(/T(\d{2}):(\d{2})/)
-  if (match) return `${match[1]}:${match[2]}`
+  const match = isoString.match(/T(\d{2}):(\d{2})/);
+  if (match) return `${match[1]}:${match[2]}`;
   // fallback
-  const date = new Date(isoString)
-  const h = date.getUTCHours().toString().padStart(2, "0")
-  const m = date.getUTCMinutes().toString().padStart(2, "0")
-  return `${h}:${m}`
+  const date = new Date(isoString);
+  const h = date.getUTCHours().toString().padStart(2, "0");
+  const m = date.getUTCMinutes().toString().padStart(2, "0");
+  return `${h}:${m}`;
 }
 
 /**
  * Format date from ISO string to readable date
- * Parses the string directly to avoid timezone conversion differences.
  */
 export function formatDate(isoString: string): string {
   // Parse date parts directly from the string to avoid timezone issues
-  const match = isoString.match(/^(\d{4})-(\d{2})-(\d{2})/)
+  const match = isoString.match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (match) {
-    const year = parseInt(match[1], 10)
-    const month = parseInt(match[2], 10) - 1
-    const day = parseInt(match[3], 10)
+    const year = parseInt(match[1], 10);
+    const month = parseInt(match[2], 10) - 1;
+    const day = parseInt(match[3], 10);
     // Create date at noon UTC to avoid day-boundary shifts
-    const date = new Date(Date.UTC(year, month, day, 12, 0, 0))
-    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-    return `${days[date.getUTCDay()]}, ${date.getUTCDate()} ${months[date.getUTCMonth()]}`
+    const date = new Date(Date.UTC(year, month, day, 12, 0, 0));
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
+    return `${days[date.getUTCDay()]}, ${date.getUTCDate()} ${months[date.getUTCMonth()]}`;
   }
-  const date = new Date(isoString)
-  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-  return `${days[date.getUTCDay()]}, ${date.getUTCDate()} ${months[date.getUTCMonth()]}`
+  const date = new Date(isoString);
+  const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  return `${days[date.getUTCDay()]}, ${date.getUTCDate()} ${months[date.getUTCMonth()]}`;
 }
 
 /**
@@ -63,27 +86,21 @@ export function formatPrice(amount: number): string {
     currency: "INR",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
-  }).format(amount)
+  }).format(amount);
 }
 
 /**
  * Get the airline name from metadata
  */
-export function getAirlineName(
-  code: string,
-  metaData: MetaData
-): string {
-  return metaData.airlineDetail[code]?.name ?? code
+export function getAirlineName(code: string, metaData: MetaData): string {
+  return metaData.airlineDetail[code]?.name ?? code;
 }
 
 /**
  * Get the airport city name from metadata
  */
-export function getAirportCity(
-  code: string,
-  metaData: MetaData
-): string {
-  return metaData.airportDetail[code]?.city ?? code
+export function getAirportCity(code: string, metaData: MetaData): string {
+  return metaData.airportDetail[code]?.city ?? code;
 }
 
 /**
@@ -91,19 +108,19 @@ export function getAirportCity(
  * Parses directly from string to avoid timezone issues.
  */
 export function getHourFromISO(isoString: string): number {
-  const match = isoString.match(/T(\d{2})/)
-  if (match) return parseInt(match[1], 10)
-  return new Date(isoString).getUTCHours()
+  const match = isoString.match(/T(\d{2})/);
+  if (match) return parseInt(match[1], 10);
+  return new Date(isoString).getUTCHours();
 }
 
 /**
  * Get departure time range label
  */
 export function getDepartureTimeLabel(hour: number): string {
-  if (hour >= 5 && hour < 12) return "Morning"
-  if (hour >= 12 && hour < 17) return "Afternoon"
-  if (hour >= 17 && hour < 21) return "Evening"
-  return "Night"
+  if (hour >= 5 && hour < 12) return "Morning";
+  if (hour >= 12 && hour < 17) return "Afternoon";
+  if (hour >= 17 && hour < 21) return "Evening";
+  return "Night";
 }
 
 /**
@@ -113,29 +130,28 @@ function normalizeFlightOption(
   option: FlightOption,
   journeyKey: string,
   sectorKey: string,
-  metaData: MetaData
+  metaData: MetaData,
 ): NormalizedFlight {
-  const segments = option.flights
-  const firstSegment = segments[0]
-  const lastSegment = segments[segments.length - 1]
+  const segments = option.flights;
+  const firstSegment = segments[0];
+  const lastSegment = segments[segments.length - 1];
   const lowestFare = option.fares.reduce((min, fare) => {
-    const price = parseFloat(fare.price.pricePerAdult)
-    return price < min ? price : min
-  }, Infinity)
+    const price = parseFloat(fare.price.pricePerAdult);
+    return price < min ? price : min;
+  }, Infinity);
   const cheapestFare = option.fares.reduce((best, fare) => {
     return parseFloat(fare.price.pricePerAdult) <
       parseFloat(best.price.pricePerAdult)
       ? fare
-      : best
-  }, option.fares[0])
+      : best;
+  }, option.fares[0]);
 
-  const totalDuration = segments.reduce((sum, s) => sum + s.durationInMin, 0)
-  const layoverMins = option.otherDetails.stops.map(
-    (s) => s.layOverTimeInMins
-  )
-  const totalWithLayover = totalDuration + layoverMins.reduce((s, m) => s + m, 0)
+  const totalDuration = segments.reduce((sum, s) => sum + s.durationInMin, 0);
+  const layoverMins = option.otherDetails.stops.map((s) => s.layOverTimeInMins);
+  const totalWithLayover =
+    totalDuration + layoverMins.reduce((s, m) => s + m, 0);
 
-  const uniqueAirlines = [...new Set(segments.map((s) => s.airlineCode))]
+  const uniqueAirlines = [...new Set(segments.map((s) => s.airlineCode))];
 
   return {
     id: option.flUnqiueId,
@@ -164,43 +180,41 @@ function normalizeFlightOption(
     brandName: cheapestFare.fareIdentifiers.brandName,
     benefits: cheapestFare.benefits,
     availableSeats: cheapestFare.fareIdentifiers.availableSeatCount,
-  }
+  };
 }
 
 /**
  * Normalize all flight data from the API response
  */
 export function normalizeFlights(
-  response: FlightSearchResponse
+  response: FlightSearchResponse,
 ): Record<string, NormalizedFlight[]> {
-  const result = response.data.result
-  const { journeys, sectors, metaData } = result
-  const normalized: Record<string, NormalizedFlight[]> = {}
+  const result = response.data.result;
+  const { journeys, sectors, metaData } = result;
+  const normalized: Record<string, NormalizedFlight[]> = {};
 
   for (const [journeyKey, journey] of Object.entries(journeys)) {
-    const sectorKey = journey.sector
-    const sector: Sector | undefined = sectors[sectorKey]
-    if (!sector) continue
+    const sectorKey = journey.sector;
+    const sector: Sector | undefined = sectors[sectorKey];
+    if (!sector) continue;
 
-    const flights: NormalizedFlight[] = []
+    const flights: NormalizedFlight[] = [];
     for (const option of Object.values(sector)) {
       flights.push(
-        normalizeFlightOption(option, journeyKey, sectorKey, metaData)
-      )
+        normalizeFlightOption(option, journeyKey, sectorKey, metaData),
+      );
     }
-    normalized[journeyKey] = flights
+    normalized[journeyKey] = flights;
   }
 
-  return normalized
+  return normalized;
 }
 
 /**
  * Get the min and max prices from normalized flights
  */
-export function getPriceRange(
-  flights: NormalizedFlight[]
-): [number, number] {
-  if (flights.length === 0) return [0, 500000]
-  const prices = flights.map((f) => f.pricePerAdult)
-  return [Math.floor(Math.min(...prices)), Math.ceil(Math.max(...prices))]
+export function getPriceRange(flights: NormalizedFlight[]): [number, number] {
+  if (flights.length === 0) return [0, 500000];
+  const prices = flights.map((f) => f.pricePerAdult);
+  return [Math.floor(Math.min(...prices)), Math.ceil(Math.max(...prices))];
 }
