@@ -8,6 +8,8 @@ export function JourneyTabs() {
   const { state, setActiveJourney } = useFlights();
   const { metaData, filters, allFlights } = state;
 
+  if (!state.hasSearched) return null;
+
   // Only show tabs if there are J2 flights (round trip).
   const hasJ2 = (allFlights["J2"] ?? []).length > 0;
   if (!hasJ2) return null;

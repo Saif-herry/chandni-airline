@@ -38,6 +38,7 @@ interface FlightState {
   filters: FilterState;
   searchQuery: SearchQuery;
   metaData: MetaData;
+  hasSearched: boolean;
   isLoading: boolean;
   error: string | null;
   currentPage: number;
@@ -147,6 +148,7 @@ function flightReducer(state: FlightState, action: FlightAction): FlightState {
       return {
         ...state,
         allFlights: newAllFlights,
+        hasSearched: true,
         filters: {
           ...state.filters,
           origin,
@@ -240,6 +242,7 @@ export function FlightProvider({ children }: { children: ReactNode }) {
     },
     searchQuery,
     metaData,
+    hasSearched: false,
     isLoading: false,
     error: null,
     currentPage: 1,
